@@ -26,8 +26,10 @@ function randomPitch() {
   return toPitch(answerButtons[Math.floor(Math.random() * answerButtons.length)])
 }
 
-let questionInstrumentNum = ref(25)
+// https://surikov.github.io/webaudiofont/#catalog-of-instruments
+let questionInstrumentNum = ref(258)
 let answerInstrumentNum = ref(1)
+
 let questionInstrumentInfo = computed(() => player.loader.instrumentInfo(questionInstrumentNum.value));
 let answerInstrumentInfo = ref(player.loader.instrumentInfo(player.loader.findInstrument(answerInstrumentNum.value)));
 let lastQuestionPitch = referencePitch
@@ -39,20 +41,20 @@ let answerState = reactive({
 })
 
 async function confirmAnswer() {
+  await play(answerInstrumentInfo.value, answerPitch.value)
+  await play(questionInstrumentInfo.value, questionPitch, 1, 1)
+
   if (questionPitch === answerPitch.value) {
     lastQuestionPitch = questionPitch
     questionPitch = randomPitch()
     answerState.displayCorrect = true
     setTimeout(() => answerState.displayCorrect = false, 1000)
 
-    await play(questionInstrumentInfo.value, lastQuestionPitch)
-    await play(questionInstrumentInfo.value, questionPitch, 1, 1)
+    await play(questionInstrumentInfo.value, lastQuestionPitch, 1, 3)
+    await play(questionInstrumentInfo.value, questionPitch, 1, 4)
   } else {
     answerState.displayIncorrect = true
     setTimeout(() => answerState.displayIncorrect = false, 1000)
-
-    await play(answerInstrumentInfo.value, answerPitch.value)
-    await play(questionInstrumentInfo.value, questionPitch, 1, 1)
   }
 }
 
@@ -96,13 +98,19 @@ async function confirmAnswer() {
 </template>
 
 <style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+  * {
+    font-family: "Noto Sans", sans-serif;
+  }
+
   .label-row {
     margin-top: 0.5em;
   }
 
   .label-row .label {
     display: inline-block;
-    min-width: 6em;
+    min-width: 7em;
   }
 
   .label-row .value {
