@@ -39,6 +39,7 @@ let answerState = reactive({
   displayCorrect: false,
   displayIncorrect: false
 })
+let hint = ref('')
 
 async function confirmAnswer() {
   await play(answerInstrumentInfo.value, answerPitch.value)
@@ -58,12 +59,16 @@ async function confirmAnswer() {
   }
 }
 
+async function showHint() {
+  hint.value = questionPitch === answerPitch.value ? '='
+      : questionPitch > answerPitch.value ? '↑'
+      : '↓'
+  setTimeout(() => hint.value = '', 1000);
+}
+
 </script>
 
 <template>
-  <div class="label-row">
-    <span class="label">Question instrument: {{ questionInstrumentInfo.title }} {{ questionInstrumentNum }}</span>
-  </div>
   <div class="label-row">
     <span class="label">Reference:</span>
     <span class="value">{{ toNotation(referencePitch) }}</span>
@@ -85,15 +90,25 @@ async function confirmAnswer() {
           :class="{ 'flash-correct': answerState.displayCorrect, 'flash-incorrect': answerState.displayIncorrect }">
       {{ toNotation(answerPitch) }}
     </span>
+    <button @click="play(answerInstrumentInfo, answerPitch)">Play</button>
     <button @click="confirmAnswer()">Answer</button>
+    <button @click="showHint()">Hint</button><span>{{ hint }}</span>
   </div>
   <div class="keyboard-row">
     <div>
-      <button v-for="answer in answerButtons" @click="answerPitch = toPitch(answer); play(answerInstrumentInfo, answerPitch)">{{ answer }}</button>
+      <button v-for="pitch in answerButtons" @click="answerPitch = toPitch(pitch); play(answerInstrumentInfo, pitch)">{{ pitch }}</button>
     </div>
   </div>
   <div class="label-row">
     <span class="label">Answer instrument: {{ answerInstrumentInfo.title }} {{ answerInstrumentNum }}</span>
+  </div>
+  <div class="keyboard-row">
+    <div>
+      <button v-for="pitch in answerButtons" @click="play(questionInstrumentInfo, pitch)">{{ pitch }}</button>
+    </div>
+  </div>
+  <div class="label-row">
+    <span class="label">Question instrument: {{ questionInstrumentInfo.title }} {{ questionInstrumentNum }}</span>
   </div>
 </template>
 
@@ -131,6 +146,10 @@ async function confirmAnswer() {
     transition: background-color 1s;
   }
 
+  .label-row button {
+    margin-right: 1em;
+  }
+
   .keyboard-row {
     margin-top: 1em;
   }
@@ -145,5 +164,9 @@ async function confirmAnswer() {
     border: 1px solid gray;
     border-radius: 0.2em;
     height: 3em;
+  }
+
+  .keyboard-row button:hover {
+    background-color: lightgray;
   }
 </style>
