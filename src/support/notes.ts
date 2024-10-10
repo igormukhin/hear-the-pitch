@@ -38,3 +38,7 @@ export function toNotation(pitch: number): string {
     }
     throw new Error('Invalid pitch ' + pitch);
 }
+
+export function randomPitch(rangeMin: number, rangeMax: number): number {
+    return Math.floor(Math.random() * (rangeMax - rangeMin + 1) + rangeMin);
+}

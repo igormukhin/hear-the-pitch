@@ -1,29 +1,16 @@
 <script setup lang="ts">
 
-import {type PresetInfo, type WaveEnvelope, type WavePreset, WebAudioFontPlayer} from '@/support/webaudiofont'
-import {toNotation, toPitch} from "@/support/notes"
+import {randomPitch, toNotation, toPitch} from "@/support/notes"
 import {computed, reactive, ref} from "vue"
-
-let audioContext: AudioContext
-let player: WebAudioFontPlayer = new WebAudioFontPlayer()
-
-async function getPreset(presetInfo: PresetInfo): Promise<WavePreset> {
-  if (!audioContext) audioContext = new window.AudioContext()
-  return await player.loader.getPreset(audioContext, presetInfo)
-}
-
-async function play(presetInfo: PresetInfo, note: string | number, duration: number = 1, delay: number = 0) : Promise<WaveEnvelope> {
-  let preset = await getPreset(presetInfo)
-  let pitch = typeof note === "string" ? toPitch(note) : note
-  return await player.queueWaveTable(audioContext, audioContext.destination, preset,
-      delay, pitch, duration)
-}
+import {play, player} from "@/support/audioplay";
 
 const referencePitch = toPitch("C3")
 const answerButtons = [ "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4" ];
 
-function randomPitch() {
-  return toPitch(answerButtons[Math.floor(Math.random() * answerButtons.length)])
+function getRandomPitch() {
+  const rangeMin = toPitch(answerButtons[0])
+  const rangeMax = toPitch(answerButtons[answerButtons.length - 1])
+  return randomPitch(rangeMin, rangeMax)
 }
 
 // https://surikov.github.io/webaudiofont/#catalog-of-instruments
@@ -33,7 +20,7 @@ let answerInstrumentNum = ref(1)
 let questionInstrumentInfo = computed(() => player.loader.instrumentInfo(questionInstrumentNum.value));
 let answerInstrumentInfo = ref(player.loader.instrumentInfo(player.loader.findInstrument(answerInstrumentNum.value)));
 let lastQuestionPitch = referencePitch
-let questionPitch = randomPitch()
+let questionPitch = getRandomPitch()
 let answerPitch = ref(referencePitch)
 let answerState = reactive({
   displayCorrect: false,
@@ -47,7 +34,7 @@ async function confirmAnswer() {
 
   if (questionPitch === answerPitch.value) {
     lastQuestionPitch = questionPitch
-    questionPitch = randomPitch()
+    questionPitch = getRandomPitch()
     answerState.displayCorrect = true
     setTimeout(() => answerState.displayCorrect = false, 1000)
 
@@ -113,11 +100,6 @@ async function showHint() {
 </template>
 
 <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
-
-  * {
-    font-family: "Noto Sans", sans-serif;
-  }
 
   .label-row {
     margin-top: 0.5em;
