@@ -2,16 +2,14 @@
 
 import {randomPitch, toNotation, toPitch} from "@/support/notes"
 import {ref} from "vue"
-import {play, player} from "@/support/audioplay";
+import {playSequence} from "@/support/audioplay";
+import {grandPiano, steelGuitar} from "@/support/instruments";
 
 const rangeMin = toPitch("C3")
 const rangeMax = toPitch("C5")
 
-// https://surikov.github.io/webaudiofont/#catalog-of-instruments
-const firstInstrumentNum = ref(258)
-const secondInstrumentNum = ref(1)
-const firstInstrumentInfo = ref(player.loader.instrumentInfo(firstInstrumentNum.value));
-const secondInstrumentInfo = ref(player.loader.instrumentInfo(secondInstrumentNum.value));
+const firstInstrumentInfo = steelGuitar;
+const secondInstrumentInfo = grandPiano;
 
 const firstPitch = ref(0)
 const secondPitch = ref(0)
@@ -36,8 +34,10 @@ function newQuestion() {
 newQuestion()
 
 function playQuestion() {
-  play(firstInstrumentInfo.value, firstPitch.value, 1)
-  play(secondInstrumentInfo.value, secondPitch.value, 1, 1)
+  return playSequence([
+    {instrument: firstInstrumentInfo, note: firstPitch.value},
+    {instrument: secondInstrumentInfo, note: secondPitch.value, delay: 1}
+  ])
 }
 
 function answer(correct: boolean) {

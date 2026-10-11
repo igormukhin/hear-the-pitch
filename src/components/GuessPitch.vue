@@ -1,8 +1,9 @@
 <script setup lang="ts">
 
 import {randomPitch, toNotation, toPitch} from "@/support/notes"
-import {computed, reactive, ref} from "vue"
-import {play, player} from "@/support/audioplay";
+import {reactive, ref} from "vue"
+import {play, playSequence} from "@/support/audioplay";
+import {brightPiano, steelGuitar} from "@/support/instruments";
 
 const referencePitch = toPitch("C3")
 const answerButtons = [ "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4" ];
@@ -13,12 +14,8 @@ function getRandomPitch() {
   return randomPitch(rangeMin, rangeMax)
 }
 
-// https://surikov.github.io/webaudiofont/#catalog-of-instruments
-let questionInstrumentNum = ref(258)
-let answerInstrumentNum = ref(1)
-
-let questionInstrumentInfo = computed(() => player.loader.instrumentInfo(questionInstrumentNum.value));
-let answerInstrumentInfo = ref(player.loader.instrumentInfo(player.loader.findInstrument(answerInstrumentNum.value)));
+const questionInstrumentInfo = steelGuitar;
+const answerInstrumentInfo = brightPiano;
 let lastQuestionPitch = referencePitch
 let questionPitch = getRandomPitch()
 let answerPitch = ref(referencePitch)
@@ -29,17 +26,25 @@ let answerState = reactive({
 let hint = ref('')
 
 async function confirmAnswer() {
-  await play(answerInstrumentInfo.value, answerPitch.value)
-  await play(questionInstrumentInfo.value, questionPitch, 1, 1)
+  const correct = questionPitch === answerPitch.value
+  const nextPitch = correct ? getRandomPitch() : questionPitch
+  const notes = [
+    {instrument: answerInstrumentInfo, note: answerPitch.value},
+    {instrument: questionInstrumentInfo, note: questionPitch, delay: 1}
+  ]
+  if (correct) {
+    notes.push(
+      {instrument: questionInstrumentInfo, note: questionPitch, delay: 3},
+      {instrument: questionInstrumentInfo, note: nextPitch, delay: 4}
+    )
+  }
+  await playSequence(notes)
 
-  if (questionPitch === answerPitch.value) {
+  if (correct) {
     lastQuestionPitch = questionPitch
-    questionPitch = getRandomPitch()
+    questionPitch = nextPitch
     answerState.displayCorrect = true
     setTimeout(() => answerState.displayCorrect = false, 1000)
-
-    await play(questionInstrumentInfo.value, lastQuestionPitch, 1, 3)
-    await play(questionInstrumentInfo.value, questionPitch, 1, 4)
   } else {
     answerState.displayIncorrect = true
     setTimeout(() => answerState.displayIncorrect = false, 1000)
@@ -87,7 +92,7 @@ async function showHint() {
     </div>
   </div>
   <div class="label-row">
-    <span class="label">Answer instrument: {{ answerInstrumentInfo.title }} {{ answerInstrumentNum }}</span>
+    <span class="label">Answer instrument: {{ answerInstrumentInfo.title }} {{ answerInstrumentInfo.catalogIndex }}</span>
   </div>
   <div class="keyboard-row">
     <div>
@@ -95,7 +100,7 @@ async function showHint() {
     </div>
   </div>
   <div class="label-row">
-    <span class="label">Question instrument: {{ questionInstrumentInfo.title }} {{ questionInstrumentNum }}</span>
+    <span class="label">Question instrument: {{ questionInstrumentInfo.title }} {{ questionInstrumentInfo.catalogIndex }}</span>
   </div>
 </template>
 
