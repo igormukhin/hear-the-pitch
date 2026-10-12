@@ -66,25 +66,26 @@ function answerSame() {
 </script>
 
 <template>
+  <fieldset class="panel">
+    <legend>Options</legend>
+    <div>Gap: <input type="number" v-model="gap" /></div>
+    <div>Same: <input type="checkbox" v-model="sameOption" /></div>
+  </fieldset>
+
   <div class="panel">
-    <button @click="playQuestion()">Replay</button>
+    <button @click="playQuestion()" data-shortcut="R">Replay (R)</button>
     <span v-if="justAnswered === '+'" class="correct">Correct</span>
     <span v-if="justAnswered === '-'" class="incorrect">Incorrect</span>
   </div>
 
-  <div class="panel">
-    <button @click="answerLower()">Lower</button>
-    <button @click="answerSame()" :disabled="!sameOption">Same</button>
-    <button @click="answerHigher()">Higher</button>
+  <div class="panel answer-buttons">
+    <button @click="answerLower()" data-shortcut="M">Lower (M)</button>
+    <button @click="answerSame()" data-shortcut="K" :disabled="!sameOption">Same (K)</button>
+    <button @click="answerHigher()" data-shortcut="O">Higher (O)</button>
   </div>
 
   <div class="panel">
-    <div>Gap: <input type="number" v-model="gap" /></div>
-    <div>Same: <input type="checkbox" v-model="sameOption" /></div>
-  </div>
-
-  <div class="panel">
-    <div>Answer: <span class="show-on-hover">{{ toNotation(firstPitch) }} {{ toNotation(secondPitch) }}</span></div>
+    <div>Answer: <span class="show-on-hover">{{ toNotation(firstPitch) }} {{ secondPitch > firstPitch ? '↗' : secondPitch < firstPitch ? '↘' : '→' }} {{ toNotation(secondPitch) }}</span></div>
   </div>
 </template>
 
@@ -92,6 +93,11 @@ function answerSame() {
 
 .panel {
   margin-top: 1em;
+}
+
+.answer-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .correct {
