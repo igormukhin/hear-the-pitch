@@ -138,7 +138,7 @@ function answerSame() {
 }
 
 .practice-card {
-  padding: 2rem;
+  padding: 1.25rem;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 1.25rem;
@@ -146,7 +146,7 @@ function answerSame() {
 }
 
 .playback {
-  padding: 0 0 1.5rem;
+  padding: 0 0 1rem;
   text-align: center;
 }
 
@@ -199,8 +199,8 @@ kbd {
 }
 
 .feedback {
-  min-height: 2.5rem;
-  padding-top: 0.875rem;
+  min-height: 2.25rem;
+  padding-top: 0.625rem;
   color: #64748b;
   font-size: 0.75rem;
   line-height: 1.5;
@@ -224,9 +224,9 @@ kbd {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   min-width: 0;
-  padding: 1.125rem 0.5rem;
+  padding: 0.75rem 0.5rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.875rem;
   background: #f8fafc;
@@ -247,7 +247,7 @@ kbd {
 
 .direction {
   color: #2563eb;
-  font-size: 1.875rem;
+  font-size: 1.625rem;
   line-height: 1;
 }
 
@@ -257,8 +257,8 @@ kbd {
 }
 
 .answer-reveal {
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
+  margin-top: 1rem;
+  padding-top: 0.875rem;
   border-top: 1px solid #f1f5f9;
   text-align: center;
 }
@@ -272,7 +272,7 @@ kbd {
 }
 
 .answer-reveal p {
-  margin: 1rem 0 0;
+  margin: 0.375rem 0 0;
   font-size: 1rem;
   font-weight: 600;
 }
@@ -284,7 +284,7 @@ kbd {
 
 .options {
   min-width: 0;
-  margin: 1.5rem 0 0;
+  margin: 1rem 0 0;
   padding: 0.25rem 1.25rem 0.5rem;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -303,7 +303,7 @@ kbd {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding: 0.875rem 0;
+  padding: 0.625rem 0;
 }
 
 .option-row + .option-row {
@@ -353,7 +353,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible {
 
 @media (max-width: 420px) {
   .practice-card {
-    padding: 1.5rem 1rem;
+    padding: 1rem;
   }
 
   .answer-buttons {
@@ -364,6 +364,33 @@ button:focus-visible, input:focus-visible, summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   button {
     transition: none;
+  }
+}
+
+@media (max-height: 700px) {
+  .practice-card {
+    padding: 1rem;
+  }
+
+  .playback {
+    padding-bottom: 0.75rem;
+  }
+
+  .replay-button {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+  }
+
+  .feedback {
+    min-height: 2rem;
+  }
+
+  .options {
+    margin-top: 0.75rem;
+  }
+
+  .option-row {
+    padding: 0.5rem 0;
   }
 }
 </style>
