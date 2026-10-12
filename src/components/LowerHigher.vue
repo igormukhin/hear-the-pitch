@@ -4,6 +4,7 @@ import {randomPitch, toNotation, toPitch} from "@/support/notes"
 import {ref} from "vue"
 import {playSequence, playWrongAnswer} from "@/support/audioplay";
 import {grandPiano, steelGuitar} from "@/support/instruments";
+import {useStoredOptions} from "@/support/storedoptions";
 
 const rangeMin = toPitch("C3")
 const rangeMax = toPitch("C5")
@@ -14,8 +15,13 @@ const secondInstrumentInfo = grandPiano;
 const firstPitch = ref(0)
 const secondPitch = ref(0)
 
-const gap = ref(8)
-const sameOption = ref(false)
+const {gap, sameOption} = useStoredOptions<{gap: number; sameOption: boolean}>("hear-the-pitch.lower-higher.options", {
+  gap: 2,
+  sameOption: true
+}, {
+  gap: (value): value is number => typeof value === "number" && Number.isInteger(value) && value > 0,
+  sameOption: (value): value is boolean => typeof value === "boolean"
+})
 const justAnswered = ref("")
 
 function newQuestion() {

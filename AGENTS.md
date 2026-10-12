@@ -15,6 +15,8 @@ This is a Vue 3 and TypeScript ear-training application built with Vite. `src/ma
 
 ## Coding Style & Naming Conventions
 
+Do not add `aria-*` attributes. Use CSS classes for visual states such as the selected exercise.
+
 Use Vue single-file components with `<script setup lang="ts">` and the Composition API. Name components in PascalCase and support modules in lowercase, following existing filenames. Use descriptive camelCase names for new functions and variables. Prefer `@/` imports for modules under `src/`. Match the surrounding file's formatting: Vue script/template blocks generally use two-space indentation, while support modules use four spaces. Quote and semicolon styles vary; avoid unrelated reformatting. No ESLint or Prettier configuration is currently provided.
 
 ## Testing Guidelines

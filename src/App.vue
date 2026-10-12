@@ -1,18 +1,24 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {useStoredOptions} from "@/support/storedoptions";
 import GuessPitch from "@/components/GuessPitch.vue"
 import HigherLower from "@/components/LowerHigher.vue";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts.vue";
 
-const exercise = ref("guessPitch")
+type Exercise = "guessPitch" | "lowerHigher"
+
+const {exercise} = useStoredOptions<{exercise: Exercise}>("hear-the-pitch.navigation", {
+  exercise: "guessPitch"
+}, {
+  exercise: (value): value is Exercise => value === "guessPitch" || value === "lowerHigher"
+})
 
 </script>
 
 <template>
   <KeyboardShortcuts />
   <nav>
-    <a href="#" @click="exercise = 'guessPitch'">Guess the pitch</a>
-    <a href="#" @click="exercise = 'lowerHigher'">Lower Higher</a>
+    <a href="#" @click="exercise = 'guessPitch'" :class="{selected: exercise === 'guessPitch'}">Guess the pitch</a>
+    <a href="#" @click="exercise = 'lowerHigher'" :class="{selected: exercise === 'lowerHigher'}">Lower Higher</a>
   </nav>
 
   <main>
@@ -29,5 +35,11 @@ const exercise = ref("guessPitch")
 
   nav a {
     margin-right: 1em;
+  }
+
+  nav a.selected {
+    background-color: #dbeafe;
+    color: #1e40af;
+    font-weight: bold;
   }
 </style>
