@@ -14,6 +14,7 @@ interface SequenceNote {
 }
 
 let audioContext: AudioContext;
+let wrongAnswerBuffer: AudioBuffer;
 const players = new Map<string, Promise<WebAudioFontPlayer>>();
 
 function loadPreset(instrument: Instrument): Promise<LegacyPreset> {
@@ -105,4 +106,41 @@ export async function play(instrument: Instrument, note: string | number,
                            duration: number = 1, delay: number = 0): Promise<NoteEnvelope> {
     const [envelope] = await playSequence([{instrument, note, duration, delay}]);
     return envelope;
+}
+
+export async function playWrongAnswer(): Promise<void> {
+    if (!audioContext) audioContext = new window.AudioContext();
+    await audioContext.resume();
+
+    const duration = 0.15;
+    if (!wrongAnswerBuffer) {
+        wrongAnswerBuffer = audioContext.createBuffer(1, Math.ceil(audioContext.sampleRate * duration), audioContext.sampleRate);
+        const samples = wrongAnswerBuffer.getChannelData(0);
+        for (let index = 0; index < samples.length; index++) {
+            samples[index] = Math.random() * 2 - 1;
+        }
+    }
+
+    const noise = audioContext.createBufferSource();
+    noise.buffer = wrongAnswerBuffer;
+    const filter = audioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1200;
+    filter.Q.value = 0.5;
+    const gain = audioContext.createGain();
+    const startTime = audioContext.currentTime;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.12, startTime + 0.01);
+    gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioContext.destination);
+    noise.onended = () => {
+        noise.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+    };
+    noise.start(startTime);
+    noise.stop(startTime + duration);
 }

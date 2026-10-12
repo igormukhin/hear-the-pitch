@@ -2,7 +2,7 @@
 
 import {randomPitch, toNotation, toPitch} from "@/support/notes"
 import {ref} from "vue"
-import {playSequence} from "@/support/audioplay";
+import {playSequence, playWrongAnswer} from "@/support/audioplay";
 import {grandPiano, steelGuitar} from "@/support/instruments";
 
 const rangeMin = toPitch("C3")
@@ -47,6 +47,7 @@ function answer(correct: boolean) {
     playQuestion()
   } else {
     justAnswered.value = "-"
+    playWrongAnswer()
   }
   setTimeout(() => justAnswered.value = "", 1000)
 }
@@ -72,13 +73,13 @@ function answerSame() {
     <div>Same: <input type="checkbox" v-model="sameOption" /></div>
   </fieldset>
 
-  <div class="panel">
+  <div class="panel button-row">
     <button @click="playQuestion()" data-shortcut="R">Replay (R)</button>
     <span v-if="justAnswered === '+'" class="correct">Correct</span>
     <span v-if="justAnswered === '-'" class="incorrect">Incorrect</span>
   </div>
 
-  <div class="panel answer-buttons">
+  <div class="panel button-row">
     <button @click="answerLower()" data-shortcut="M">Lower (M)</button>
     <button @click="answerSame()" data-shortcut="K" :disabled="!sameOption">Same (K)</button>
     <button @click="answerHigher()" data-shortcut="O">Higher (O)</button>
@@ -95,7 +96,7 @@ function answerSame() {
   margin-top: 1em;
 }
 
-.answer-buttons {
+.button-row {
   display: flex;
   gap: 0.5rem;
 }
