@@ -145,34 +145,6 @@ function answerSame() {
   box-shadow: 0 4px 20px #0f172a06;
 }
 
-header {
-  text-align: center;
-}
-
-.eyebrow {
-  margin: 0 0 0.75rem;
-  color: #2563eb;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(1.25rem, 4vw, 1.625rem);
-  font-weight: 650;
-  line-height: 1.35;
-  letter-spacing: -0.025em;
-}
-
-.description {
-  margin: 0.75rem 0 0;
-  color: #64748b;
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
 .playback {
   padding: 0 0 1.5rem;
   text-align: center;
