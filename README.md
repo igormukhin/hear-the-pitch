@@ -45,4 +45,7 @@ in pitch, volume, and note envelopes.
 
 # TODO
 
-* ...
+* HigherLower: settings to select octave range
+* HigherLower: performance stats, question, rate, rate revisited, ... (reset button)
+* HigherLower: settings: selection for both instruments
+* HigherLower: settings: gap as min/max? 
