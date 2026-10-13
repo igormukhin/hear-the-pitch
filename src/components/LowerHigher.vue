@@ -1,10 +1,11 @@
 <script setup lang="ts">
 
 import {randomPitch, toNotation, toPitch} from "@/support/notes"
-import {ref} from "vue"
+import {onUnmounted, ref, watch} from "vue"
 import {playSequence, playWrongAnswer} from "@/support/audioplay";
 import {grandPiano, steelGuitar} from "@/support/instruments";
 import {useStoredOptions} from "@/support/storedoptions";
+import {QuestionPractice} from "@/support/questionpractice";
 
 const rangeMin = toPitch("C3")
 const rangeMax = toPitch("C5")
@@ -24,8 +25,8 @@ const {gap, sameOption} = useStoredOptions<{gap: number; sameOption: boolean}>("
 })
 const justAnswered = ref("")
 
-function newQuestion() {
-  firstPitch.value = randomPitch(rangeMin, rangeMax)
+function createQuestion() {
+  const firstPitch = randomPitch(rangeMin, rangeMax)
 
   let coefficient: number
   if (sameOption.value) {
@@ -34,10 +35,28 @@ function newQuestion() {
     coefficient = Math.floor(Math.random() * 2) === 0 ? -1 : 1
   }
 
-  secondPitch.value = firstPitch.value + gap.value * coefficient
+  return {firstPitch, secondPitch: firstPitch + gap.value * coefficient}
+}
+
+const practice = new QuestionPractice(createQuestion)
+let feedbackTimeout: ReturnType<typeof setTimeout> | undefined
+
+function newQuestion() {
+  const question = practice.nextQuestion()
+  firstPitch.value = question.firstPitch
+  secondPitch.value = question.secondPitch
 }
 
 newQuestion()
+
+watch([gap, sameOption], () => {
+  clearTimeout(feedbackTimeout)
+  justAnswered.value = ""
+  practice.reset()
+  newQuestion()
+}, {flush: 'sync'})
+
+onUnmounted(() => clearTimeout(feedbackTimeout))
 
 function playQuestion() {
   return playSequence([
@@ -47,6 +66,8 @@ function playQuestion() {
 }
 
 function answer(correct: boolean) {
+  clearTimeout(feedbackTimeout)
+  practice.registerAnswer(correct)
   if (correct) {
     justAnswered.value = "+"
     newQuestion()
@@ -55,7 +76,7 @@ function answer(correct: boolean) {
     justAnswered.value = "-"
     playWrongAnswer()
   }
-  setTimeout(() => justAnswered.value = "", 1000)
+  feedbackTimeout = setTimeout(() => justAnswered.value = "", 1000)
 }
 
 function answerHigher() {

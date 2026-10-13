@@ -10,6 +10,25 @@ Start the development server with `npm run dev` and verify changes with `npm run
 
 TypeScript stays on version 6 because the current `vue-tsc` release cannot run with TypeScript 7.
 
+## Practice reviews and tests
+
+Higher Lower uses the standalone, in-memory `QuestionPractice` module in
+`src/support/questionpractice.ts`. A missed pair stays active until corrected,
+then returns after four other completed questions. A successful delayed review
+returns after twelve more questions; a second successful review retires it.
+Missing a review restarts the four-question interval. Immediate retries do not
+count as successful delayed reviews or advance the queue.
+
+All pairs use the current gap and same-note settings. Changing either setting
+resets the queue and current question. Reloading the page also clears practice
+history; only exercise settings are persisted. These intervals are initial
+product defaults, not experimentally established optimal ear-training intervals.
+
+Run `npm test` for deterministic scheduler tests using Vitest, or
+`npm run test:watch` to rerun tests as files change. Vitest uses the existing
+Vite configuration. CI runs `npm test` before building.
+Run `npm run build` for application and test type checking and production compilation.
+
 ## Audio
 
 Playback uses the `webaudiofontplayer` npm package. `src/support/audioplay.ts`

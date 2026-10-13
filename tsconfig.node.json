@@ -1,6 +1,8 @@
 {
   "extends": "@tsconfig/node22/tsconfig.json",
   "include": [
+    "src/support/__tests__/*.test.ts",
+    "src/support/questionpractice.ts",
     "vite.config.*",
     "vitest.config.*",
     "cypress.config.*",
